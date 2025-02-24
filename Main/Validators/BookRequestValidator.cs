@@ -10,10 +10,10 @@ public class BookRequestValidator : AbstractValidator<BookRequest>
         RuleFor(x => x.OptionCode)
             .NotEmpty().WithMessage("OptionCode is required");
 
-        RuleFor(x => x.SearchReq)
+        RuleFor(x => x.SearchRequest)
             .NotNull().WithMessage("SearchReq is required");
 
-        RuleFor(x => x.SearchReq)
+        RuleFor(x => x.SearchRequest)
             .ChildRules(searchReq =>
             {
                 searchReq.RuleFor(s => s.Destination)

@@ -123,7 +123,7 @@ public class ManagerService : IManagerService
             Status = BookingStatusEnum.Pending
         };
 
-        if (request.SearchReq.FromDate >= DateTime.UtcNow && request.SearchReq.FromDate <= DateTime.UtcNow.AddDays(45))
+        if (request.SearchRequest.FromDate >= DateTime.UtcNow && request.SearchRequest.FromDate <= DateTime.UtcNow.AddDays(45))
             booking.SearchType = SearchTypeEnum.LastMinuteHotels.ToString();
 
         _bookings[bookingCode] = booking;
