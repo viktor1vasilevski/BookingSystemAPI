@@ -1,7 +1,7 @@
 ﻿namespace Main.Requests;
 
-public class BookReq
+public class BookRequest
 {
     public string OptionCode { get; set; }
-    public SearchReq SearchReq { get; set; }
+    public SearchRequest SearchReq { get; set; }
 }

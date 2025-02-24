@@ -19,28 +19,28 @@ public class ManagerService : IManagerService
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly ILogger<ManagerService> _logger;
-    private readonly IValidator<SearchReq> _searchReqValidator;
-    private readonly IValidator<BookReq> _bookReqValidator;
+    private readonly IValidator<SearchRequest> _searchRequestValidator;
+    private readonly IValidator<BookRequest> _bookRequestValidator;
     private readonly IHubContext<BookingHub> _hubContext;
 
     private static readonly Dictionary<string, BookingDTO> _bookings = new();
     private static readonly Random _random = new();
 
     public ManagerService(HttpClient httpClient, IConfiguration configuration, ILogger<ManagerService> logger, 
-        IValidator<SearchReq> searchReqValidator, IValidator<BookReq> bookReqValidator, IHubContext<BookingHub> hubContext)
+        IValidator<SearchRequest> searchRequestValidator, IValidator<BookRequest> bookRequestValidator, IHubContext<BookingHub> hubContext)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _logger = logger;
 
-        _searchReqValidator = searchReqValidator;
-        _bookReqValidator = bookReqValidator;
+        _searchRequestValidator = searchRequestValidator;
+        _bookRequestValidator = bookRequestValidator;
         _hubContext = hubContext;
     }
 
-    public async Task<ApiResponse<SearchRes>> SearchAsync(SearchReq request)
+    public async Task<ApiResponse<SearchResponse>> SearchAsync(SearchRequest request)
     {
-        var validationResult = ValidationHelper.ValidateRequest<SearchReq, SearchRes>(request, _searchReqValidator);
+        var validationResult = ValidationHelper.ValidateRequest<SearchRequest, SearchResponse>(request, _searchRequestValidator);
 
         if (validationResult != null)
             return validationResult;
@@ -70,11 +70,11 @@ public class ManagerService : IManagerService
                     City = hotel.City
                 }));
 
-                return new ApiResponse<SearchRes>
+                return new ApiResponse<SearchResponse>
                 {
                     Success = true,
-                    Data = new SearchRes { Options = options, SearchType = SearchTypeEnum.HotelOnly },
-                    NotificationType = NotificationType.Success
+                    Data = new SearchResponse { Options = options, SearchType = SearchTypeEnum.HotelOnly },
+                    NotificationType = NotificationTypeEnum.Success
                 };
             }
             else if (searchType == SearchTypeEnum.HotelAndFlight.ToString())
@@ -83,11 +83,11 @@ public class ManagerService : IManagerService
                 options = PopulateHotelsAndFlightsOptions(hotels, flights);
             }
 
-            return new ApiResponse<SearchRes>
+            return new ApiResponse<SearchResponse>
             {
                 Success = true,
-                Data = new SearchRes { Options = options, SearchType = SearchTypeEnum.HotelAndFlight },
-                NotificationType = NotificationType.Success
+                Data = new SearchResponse { Options = options, SearchType = SearchTypeEnum.HotelAndFlight },
+                NotificationType = NotificationTypeEnum.Success
             };
         }
         catch (Exception ex)
@@ -95,18 +95,18 @@ public class ManagerService : IManagerService
             _logger.LogError(ex, "An error occurred while processing the search request at {Timestamp}. Destination: {Destination}, Departure: {DepartureAirport}",
                 DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), request.Destination, request.DepartureAirport);
 
-            return new ApiResponse<SearchRes>
+            return new ApiResponse<SearchResponse>
             {
                 Success = false,
                 Message = ManagerConstants.ERROR_SEARCH_REQUEST,
-                NotificationType = NotificationType.ServerError
+                NotificationType = NotificationTypeEnum.ServerError
             };
         }
     }
 
-    public ApiResponse<BookRes> Book(BookReq request)
+    public ApiResponse<BookResponse> Book(BookRequest request)
     {
-        var validationResult = ValidationHelper.ValidateRequest<BookReq, BookRes>(request, _bookReqValidator);
+        var validationResult = ValidationHelper.ValidateRequest<BookRequest, BookResponse>(request, _bookRequestValidator);
 
         if (validationResult != null)
             return validationResult;
@@ -128,11 +128,11 @@ public class ManagerService : IManagerService
 
         _bookings[bookingCode] = booking;
 
-        return new ApiResponse<BookRes>
+        return new ApiResponse<BookResponse>
         {
             Success = true,
-            NotificationType = NotificationType.Success,
-            Data = new BookRes
+            NotificationType = NotificationTypeEnum.Success,
+            Data = new BookResponse
             {
                 BookingCode = bookingCode,
                 BookingTime = bookingTime
@@ -140,7 +140,7 @@ public class ManagerService : IManagerService
         };
     }
 
-    public async Task<ApiResponse<CheckStatusRes>> CheckStatusAsync(CheckStatusReq request)
+    public async Task<ApiResponse<CheckStatusResponse>> CheckStatusAsync(CheckStatusRequest request)
     {
         try
         {
@@ -161,19 +161,19 @@ public class ManagerService : IManagerService
                     }
 
                 });
-                return new ApiResponse<CheckStatusRes>
+                return new ApiResponse<CheckStatusResponse>
                 {
                     Message = ManagerConstants.PENDING,
-                    NotificationType = NotificationType.Info,
-                    Data = new CheckStatusRes { Status = BookingStatusEnum.Pending },
+                    NotificationType = NotificationTypeEnum.Info,
+                    Data = new CheckStatusResponse { Status = BookingStatusEnum.Pending },
                 };
             }
 
-            return new ApiResponse<CheckStatusRes>
+            return new ApiResponse<CheckStatusResponse>
             {
                 Message = ManagerConstants.INVALID_BOOKING_CODE,
-                NotificationType = NotificationType.BadRequest,
-                Data = new CheckStatusRes { Status = BookingStatusEnum.Failed },
+                NotificationType = NotificationTypeEnum.BadRequest,
+                Data = new CheckStatusResponse { Status = BookingStatusEnum.Failed },
             };
         }
         catch (Exception ex)
@@ -181,10 +181,10 @@ public class ManagerService : IManagerService
             _logger.LogError(ex, "An error occurred while processing the check status of the booking code at {Timestamp}. BookingCode: {BookingCode}",
                 DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"), request.BookingCode);
 
-            return new ApiResponse<CheckStatusRes>
+            return new ApiResponse<CheckStatusResponse>
             {
                 Success = false,
-                NotificationType = NotificationType.ServerError,
+                NotificationType = NotificationTypeEnum.ServerError,
                 Message = ManagerConstants.ERROR_CHECKSTATUS
             };
         }
@@ -193,7 +193,7 @@ public class ManagerService : IManagerService
 
     #region private methods 
 
-    private string DetermineSearchType(SearchReq request)
+    private string DetermineSearchType(SearchRequest request)
     {
         if (String.IsNullOrEmpty(request.DepartureAirport))
             return "HotelOnly";

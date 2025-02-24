@@ -27,7 +27,7 @@ builder.Services.AddCors(options =>
 
 builder.Services.AddIoCService();
 
-builder.Services.AddValidatorsFromAssemblyContaining<SearchReq>(ServiceLifetime.Transient);
+builder.Services.AddValidatorsFromAssemblyContaining<SearchRequest>(ServiceLifetime.Transient);
 
 var app = builder.Build();
 

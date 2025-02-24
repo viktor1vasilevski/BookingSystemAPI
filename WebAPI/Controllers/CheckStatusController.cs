@@ -18,7 +18,7 @@ namespace WebAPI.Controllers
 
 
         [HttpGet("checkstatus")]
-        public async Task<IActionResult> CheckStatus([FromQuery] CheckStatusReq request, [FromServices] IHubContext<BookingHub> hubContext)
+        public async Task<IActionResult> CheckStatus([FromQuery] CheckStatusRequest request, [FromServices] IHubContext<BookingHub> hubContext)
         {
             var response = await _managerService.CheckStatusAsync(request);
             return HandleResponse(response);

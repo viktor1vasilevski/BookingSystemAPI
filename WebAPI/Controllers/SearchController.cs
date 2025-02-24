@@ -16,9 +16,9 @@ namespace WebAPI.Controllers
 
 
         [HttpPost("search")]
-        public async Task<IActionResult> Search([FromBody] SearchReq req)
+        public async Task<IActionResult> Search([FromBody] SearchRequest request)
         {
-            var response = await _managerService.SearchAsync(req);
+            var response = await _managerService.SearchAsync(request);
             return HandleResponse(response);
         }
     }

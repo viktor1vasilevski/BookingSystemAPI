@@ -2,7 +2,7 @@
 
 namespace Main.Responses;
 
-public class CheckStatusRes
+public class CheckStatusResponse
 {
     public BookingStatusEnum Status { get; set; }
 }

@@ -1,6 +1,6 @@
 ﻿namespace Main.Enums;
 
-public enum NotificationType
+public enum NotificationTypeEnum
 {
     Success,
     BadRequest,

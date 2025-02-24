@@ -1,6 +1,6 @@
 ﻿namespace Main.Requests;
 
-public class SearchReq
+public class SearchRequest
 {
     public string Destination { get; set; }
     public string? DepartureAirport { get; set; }

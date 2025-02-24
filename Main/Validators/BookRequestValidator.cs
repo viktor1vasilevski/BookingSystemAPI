@@ -3,9 +3,9 @@ using Main.Requests;
 
 namespace Main.Validators;
 
-public class BookReqValidator : AbstractValidator<BookReq>
+public class BookRequestValidator : AbstractValidator<BookRequest>
 {
-    public BookReqValidator()
+    public BookRequestValidator()
     {
         RuleFor(x => x.OptionCode)
             .NotEmpty().WithMessage("OptionCode is required");

@@ -15,9 +15,9 @@ namespace WebAPI.Controllers
         }
 
         [HttpPost("book")]
-        public IActionResult Book([FromBody] BookReq req)
+        public IActionResult Book([FromBody] BookRequest request)
         {
-            var response = _managerService.Book(req);
+            var response = _managerService.Book(request);
             return HandleResponse(response);
         }
     }

@@ -12,10 +12,10 @@ namespace WebAPI.Controllers
         {
             return response.NotificationType switch
             {
-                NotificationType.Success => Ok(response),
-                NotificationType.BadRequest => BadRequest(response),
-                NotificationType.NotFound => NotFound(response),
-                NotificationType.ServerError => StatusCode(500, response),
+                NotificationTypeEnum.Success => Ok(response),
+                NotificationTypeEnum.BadRequest => BadRequest(response),
+                NotificationTypeEnum.NotFound => NotFound(response),
+                NotificationTypeEnum.ServerError => StatusCode(500, response),
                 _ => Ok(response),
             };
         }

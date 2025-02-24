@@ -5,8 +5,8 @@ namespace Main.Interfaces;
 
 public interface IManagerService
 {
-    Task<ApiResponse<SearchRes>> SearchAsync(SearchReq request);
-    ApiResponse<BookRes> Book(BookReq request);
-    Task<ApiResponse<CheckStatusRes>> CheckStatusAsync(CheckStatusReq request);
+    Task<ApiResponse<SearchResponse>> SearchAsync(SearchRequest request);
+    ApiResponse<BookResponse> Book(BookRequest request);
+    Task<ApiResponse<CheckStatusResponse>> CheckStatusAsync(CheckStatusRequest request);
 
 }

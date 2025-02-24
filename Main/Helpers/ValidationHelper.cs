@@ -26,7 +26,7 @@ public static class ValidationHelper
             return new ApiResponse<TResponse>
             {
                 Success = false,
-                NotificationType = NotificationType.BadRequest,
+                NotificationType = NotificationTypeEnum.BadRequest,
                 Message = "Validation failed.",
                 Errors = errors
             };

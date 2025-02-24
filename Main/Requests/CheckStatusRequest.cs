@@ -1,6 +1,6 @@
 ﻿namespace Main.Requests;
 
-public class CheckStatusReq
+public class CheckStatusRequest
 {
     public string BookingCode { get; set; }
 

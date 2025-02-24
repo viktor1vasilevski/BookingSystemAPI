@@ -3,9 +3,9 @@ using Main.Requests;
 
 namespace Main.Validators;
 
-public class SearchReqValidator : AbstractValidator<SearchReq>
+public class SearchRequestValidator : AbstractValidator<SearchRequest>
 {
-    public SearchReqValidator()
+    public SearchRequestValidator()
     {
         RuleFor(x => x.Destination)
             .NotEmpty().WithMessage("Destination is required.");
