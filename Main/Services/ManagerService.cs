@@ -19,32 +19,23 @@ public class ManagerService : IManagerService
     private readonly HttpClient _httpClient;
     private readonly IConfiguration _configuration;
     private readonly ILogger<ManagerService> _logger;
-    private readonly IValidator<SearchRequest> _searchRequestValidator;
-    private readonly IValidator<BookRequest> _bookRequestValidator;
     private readonly IHubContext<BookingHub> _hubContext;
 
     private static readonly Dictionary<string, BookingDTO> _bookings = new();
     private static readonly Random _random = new();
 
-    public ManagerService(HttpClient httpClient, IConfiguration configuration, ILogger<ManagerService> logger, 
-        IValidator<SearchRequest> searchRequestValidator, IValidator<BookRequest> bookRequestValidator, IHubContext<BookingHub> hubContext)
+    public ManagerService(HttpClient httpClient, IConfiguration configuration, 
+        ILogger<ManagerService> logger, IHubContext<BookingHub> hubContext)
     {
         _httpClient = httpClient;
         _configuration = configuration;
         _logger = logger;
 
-        _searchRequestValidator = searchRequestValidator;
-        _bookRequestValidator = bookRequestValidator;
         _hubContext = hubContext;
     }
 
     public async Task<ApiResponse<SearchResponse>> SearchAsync(SearchRequest request)
     {
-        var validationResult = ValidationHelper.ValidateRequest<SearchRequest, SearchResponse>(request, _searchRequestValidator);
-
-        if (validationResult != null)
-            return validationResult;
-
         var searchType = DetermineSearchType(request);
 
         string hotelApiUrl = _configuration["ApiEndpoint:SearchHotels"].Replace("{destinationCode}", request.Destination);
@@ -106,11 +97,6 @@ public class ManagerService : IManagerService
 
     public ApiResponse<BookResponse> Book(BookRequest request)
     {
-        var validationResult = ValidationHelper.ValidateRequest<BookRequest, BookResponse>(request, _bookRequestValidator);
-
-        if (validationResult != null)
-            return validationResult;
-
         string bookingCode = GenerateBookingCode();
         int sleepTime = RandomHelper.GenerateRandomInt(5, 10);
         DateTime bookingTime = DateTime.UtcNow;

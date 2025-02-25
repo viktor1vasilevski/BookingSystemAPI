@@ -1,4 +1,5 @@
 using FluentValidation;
+using FluentValidation.AspNetCore;
 using Main.Extensions;
 using Main.Hubs;
 using Main.Requests;
@@ -28,6 +29,7 @@ builder.Services.AddCors(options =>
 builder.Services.AddIoCService();
 
 builder.Services.AddValidatorsFromAssemblyContaining<SearchRequest>(ServiceLifetime.Transient);
+builder.Services.AddFluentValidationAutoValidation();
 
 var app = builder.Build();
 
