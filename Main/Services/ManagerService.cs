@@ -14,25 +14,19 @@ using Newtonsoft.Json;
 
 namespace Main.Services;
 
-public class ManagerService : IManagerService
+public class ManagerService(HttpClient httpClient,
+    IConfiguration configuration,
+    ILogger<ManagerService> logger,
+    IHubContext<BookingHub> hubContext) : IManagerService
 {
-    private readonly HttpClient _httpClient;
-    private readonly IConfiguration _configuration;
-    private readonly ILogger<ManagerService> _logger;
-    private readonly IHubContext<BookingHub> _hubContext;
-
     private static readonly Dictionary<string, BookingDTO> _bookings = new();
     private static readonly Random _random = new();
 
-    public ManagerService(HttpClient httpClient, IConfiguration configuration, 
-        ILogger<ManagerService> logger, IHubContext<BookingHub> hubContext)
-    {
-        _httpClient = httpClient;
-        _configuration = configuration;
-        _logger = logger;
+    private readonly HttpClient _httpClient = httpClient;
+    private readonly IConfiguration _configuration = configuration;
+    private readonly ILogger<ManagerService> _logger = logger;
+    private readonly IHubContext<BookingHub> _hubContext = hubContext;
 
-        _hubContext = hubContext;
-    }
 
     public async Task<ApiResponse<SearchResponse>> SearchAsync(SearchRequest request)
     {

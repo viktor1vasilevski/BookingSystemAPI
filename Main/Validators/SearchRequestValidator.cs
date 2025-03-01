@@ -8,7 +8,7 @@ public class SearchRequestValidator : AbstractValidator<SearchRequest>
     public SearchRequestValidator()
     {
         RuleFor(x => x.Destination)
-            .NotEmpty().WithMessage("Destination is required.");
+            .NotEmpty().WithMessage("Destination is required test.");
 
         RuleFor(x => x.FromDate)
             .NotEmpty().WithMessage("From Date is required.");
