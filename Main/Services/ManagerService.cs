@@ -64,7 +64,7 @@ public class ManagerService(HttpClient httpClient,
             }
             else if (searchType == SearchTypeEnum.HotelAndFlight.ToString())
             {
-                var (hotels, flights) = await FetchHotelsAndFlightsAsync(hotelApiUrl, flightApiUrl);
+                var (hotels, flights) = await FetchHotelsAndFlightsAsync(request.DepartureAirport, request.Destination);
                 options = PopulateHotelsAndFlightsOptions(hotels, flights);
             }
 
