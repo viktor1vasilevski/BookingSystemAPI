@@ -6,7 +6,7 @@ namespace Main.Extensions;
 
 public static class ServiceCollectionExtension
 {
-    public static IServiceCollection AddIoCService(this IServiceCollection services)
+    public static IServiceCollection AddApplicationServices(this IServiceCollection services)
     {
         services.AddHttpClient<IManagerService, ManagerService>();
 

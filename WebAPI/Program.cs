@@ -4,6 +4,7 @@ using Main.Extensions;
 using Main.Hubs;
 using Main.Requests;
 using WebAPI.Middlewares;
+using IoC;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -26,7 +27,8 @@ builder.Services.AddCors(options =>
 });
 
 
-builder.Services.AddIoCService();
+builder.Services.AddApplicationServices();
+builder.Services.AddInfrastructureServices();
 
 builder.Services.AddValidatorsFromAssemblyContaining<SearchRequest>(ServiceLifetime.Transient);
 builder.Services.AddFluentValidationAutoValidation();

@@ -17,7 +17,7 @@ namespace Main.Services;
 public class ManagerService(HttpClient httpClient,
     IConfiguration configuration,
     ILogger<ManagerService> logger,
-    IHubContext<BookingHub> hubContext) : IManagerService
+    IHubContext<BookingHub> hubContext, ITravelApiClient travelApiClient) : IManagerService
 {
     private static readonly Dictionary<string, BookingDTO> _bookings = new();
     private static readonly Random _random = new();
@@ -26,24 +26,19 @@ public class ManagerService(HttpClient httpClient,
     private readonly IConfiguration _configuration = configuration;
     private readonly ILogger<ManagerService> _logger = logger;
     private readonly IHubContext<BookingHub> _hubContext = hubContext;
+    private readonly ITravelApiClient _travelApiClient = travelApiClient;
 
 
     public async Task<ApiResponse<SearchResponse>> SearchAsync(SearchRequest request)
     {
-        var searchType = DetermineSearchType(request);
-
-        string hotelApiUrl = _configuration["ApiEndpoint:SearchHotels"].Replace("{destinationCode}", request.Destination);
-        string flightApiUrl = _configuration["ApiEndpoint:SearchFlights"]
-            .Replace("{departureAirport}", request.DepartureAirport ?? "")
-            .Replace("{arrivalAirport}", request.Destination);
-
         try
         {
             var options = new List<Option>();
+            var searchType = DetermineSearchType(request);
 
             if (searchType == SearchTypeEnum.HotelOnly.ToString() || searchType == SearchTypeEnum.LastMinuteHotels.ToString())
             {
-                var hotels = await FetchHotelsAsync(hotelApiUrl);
+                var hotels = await _travelApiClient.FetchHotelsAsync(request.Destination);
                 options.AddRange(hotels.Select(hotel => new Option
                 {
                     OptionCode = Guid.NewGuid().ToString(),
@@ -64,7 +59,7 @@ public class ManagerService(HttpClient httpClient,
             }
             else if (searchType == SearchTypeEnum.HotelAndFlight.ToString())
             {
-                var (hotels, flights) = await FetchHotelsAndFlightsAsync(request.DepartureAirport, request.Destination);
+                var (hotels, flights) = await _travelApiClient.FetchHotelsAndFlightsAsync(request.Destination, request.DepartureAirport);
                 options = PopulateHotelsAndFlightsOptions(hotels, flights);
             }
 
@@ -207,58 +202,6 @@ public class ManagerService(HttpClient httpClient,
         }
 
         return options;
-    }
-    private async Task<List<HotelDTO>> FetchHotelsAsync(string url)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to fetch hotels. API response: {errorMessage}");
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<HotelDTO>>(content) ?? new List<HotelDTO>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while fetching hotels from {Url} at {Timestamp}",
-                url, DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
-            throw;
-        }
-    }
-    private async Task<List<FlightDTO>> FetchFlightsAsync(string url)
-    {
-        try
-        {
-            var response = await _httpClient.GetAsync(url);
-            if (!response.IsSuccessStatusCode)
-            {
-                var errorMessage = await response.Content.ReadAsStringAsync();
-                throw new Exception($"Failed to fetch flights. API response: {errorMessage}");
-            }
-
-            var content = await response.Content.ReadAsStringAsync();
-            return JsonConvert.DeserializeObject<List<FlightDTO>>(content) ?? new List<FlightDTO>();
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "An error occurred while fetching flights from {Url} at {Timestamp}",
-                url, DateTime.UtcNow.ToString("yyyy-MM-dd HH:mm:ss"));
-            throw;
-        }
-
-    }
-    private async Task<(List<HotelDTO>, List<FlightDTO>)> FetchHotelsAndFlightsAsync(string hotelUrl, string flightUrl)
-    {
-        var hotelTask = FetchHotelsAsync(hotelUrl);
-        var flightTask = FetchFlightsAsync(flightUrl);
-
-        await Task.WhenAll(hotelTask, flightTask);
-
-        return (await hotelTask, await flightTask);
     }
     private static string GenerateBookingCode()
     {
