@@ -41,7 +41,8 @@ This is a mock travel booking system backend built in .NET 10, designed to simul
   "ToDate": "2025-06-15T00:00:00Z"
 }
 
-
+#### Response
+```json:
 {
   "data": {
     "options": [
@@ -65,3 +66,20 @@ This is a mock travel booking system backend built in .NET 10, designed to simul
   "errors": null,
   "notificationType": 0
 }
+
+
+### 🔍 2. Book
+
+**POST** `/api/book/book`  
+**Content-Type:** `application/json`
+
+{
+  "OptionCode": "d9fffc2a-91bf-4ae3-9710-98d44bdd8569",
+  "SearchReq": {
+    "Destination": "SKP",
+    "DepartureAirport": "CPH",
+    "FromDate": "2025-06-10T00:00:00Z",
+    "ToDate": "2025-06-15T00:00:00Z"
+  }
+}
+
